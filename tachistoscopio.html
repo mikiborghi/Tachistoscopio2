@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Tachistoscopio</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+
+    textarea, input {
+      width: 300px;
+      margin: 10px;
+    }
+
+    #display {
+      font-size: 72px;
+      margin-top: 40px;
+      height: 100px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Simulatore di Tachistoscopio</h1>
+
+  <label for="syllables">Inserisci le sillabe (una per riga o separate da spazi):</label><br>
+  <textarea id="syllables" rows="6"></textarea><br>
+
+  <label for="duration">Tempo di esposizione (ms):</label><br>
+  <input type="number" id="duration" value="500"><br>
+
+  <label for="interpause">Intertempo tra le sillabe (ms):</label><br>
+  <input type="number" id="interpause" value="200"><br>
+
+  <button onclick="start()">Avvia</button>
+
+  <div id="display"></div>
+
+  <script>
+    let syllables = [];
+    let index = 0;
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function start() {
+      const raw = document.getElementById("syllables").value;
+      const displayTime = parseInt(document.getElementById("duration").value);
+      const interPause = parseInt(document.getElementById("interpause").value);
+      syllables = raw.replace(/\n/g, " ").split(" ").filter(s => s.trim() !== "");
+      shuffle(syllables);
+      index = 0;
+      document.getElementById("display").innerText = "";
+      runSequence(displayTime, interPause);
+    }
+
+    function runSequence(displayTime, interPause) {
+      if (index < syllables.length) {
+        document.getElementById("display").innerText = syllables[index];
+        setTimeout(() => {
+          document.getElementById("display").innerText = "";
+          setTimeout(() => {
+            index++;
+            runSequence(displayTime, interPause);
+          }, interPause);
+        }, displayTime);
+      } else {
+        document.getElementById("display").innerText = "";
+      }
+    }
+  </script>
+</body>
+</html>
